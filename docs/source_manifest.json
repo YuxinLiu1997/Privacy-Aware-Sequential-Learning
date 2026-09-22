@@ -1,0 +1,191 @@
+[
+  {
+    "source": "R_social_learning/Fgiure_1_Probability of correctr cascade.R",
+    "destination": "r/figure_01_binary_accuracy.R",
+    "source_sha256": "b40736d34f78ffb9116d73898f823c0a7b30c82979f3ab7997af0fd11a2cd1ac",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "b40736d34f78ffb9116d73898f823c0a7b30c82979f3ab7997af0fd11a2cd1ac"
+  },
+  {
+    "source": "R_social_learning/Figure_3_Smooth randomized response and the signal likelihood.R",
+    "destination": "r/figure_05_smooth_randomized_response.R",
+    "source_sha256": "476e0dfcc23469f27e2c22288b024d08b68370434aba4c5568f939ef940c650e",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "476e0dfcc23469f27e2c22288b024d08b68370434aba4c5568f939ef940c650e"
+  },
+  {
+    "source": "R_social_learning/Figure_5_heterogeneous_likelihood_ratio.R",
+    "destination": "r/figure_07_heterogeneous_learning.R",
+    "source_sha256": "0f3afd6775f1fb76efb0806857c5cc72a26d2d516deb8a9b6535ded0b4a5f9bf",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "0f3afd6775f1fb76efb0806857c5cc72a26d2d516deb8a9b6535ded0b4a5f9bf"
+  },
+  {
+    "source": "R_social_learning/Figure_K1_Evolution of log-likelihood-ratio.R",
+    "destination": "r/figure_J1_llr_evolution.R",
+    "source_sha256": "895c33dc3b413a5626b3bbec6dc69019c5f202d01d46e7d277066cba92e0f7d4",
+    "note": "Added missing ln_values_new <- simulate_ln_new(ln_start, n_steps); model otherwise unchanged.",
+    "packaged_sha256": "00c7d87b7d573152d6c7cd4089ab5722f65c1df6d85583264310b89048a9a406"
+  },
+  {
+    "source": "R_social_learning/Figure_4_Expectation.R",
+    "destination": "supplementary/r/legacy_expected_first_correct_report.R",
+    "source_sha256": "84cec91e64e76546d1ab757c8142e9f9416a11d356bdbf4b80e06ebfb1d6b633",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "84cec91e64e76546d1ab757c8142e9f9416a11d356bdbf4b80e06ebfb1d6b633"
+  },
+  {
+    "source": "R_social_learning/optimal_epsilon_expeced_time.R",
+    "destination": "supplementary/r/legacy_optimal_epsilon_expected_time.R",
+    "source_sha256": "a74b7d5fb11eeb5b322ee702396a54c7189de68cc7e35f2984413b3221c01e0a",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "a74b7d5fb11eeb5b322ee702396a54c7189de68cc7e35f2984413b3221c01e0a"
+  },
+  {
+    "source": "R_social_learning/ratio_and_reason.R",
+    "destination": "supplementary/r/legacy_combined_experiments.R",
+    "source_sha256": "e98959d8931c88a80797666836550e74b7e0f4e650caef8f88bf3a3ea24ad56e",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "e98959d8931c88a80797666836550e74b7e0f4e650caef8f88bf3a3ea24ad56e"
+  },
+  {
+    "source": "python_social_learning/01_stopping_time_binary.py",
+    "destination": "python/figure_02_binary_stopping_time.py",
+    "source_sha256": "3e122bf1ceaa6ac7aa363bb56b573dd5a2afdd3f62f37b4b06d1436f6b97e555",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "3e122bf1ceaa6ac7aa363bb56b573dd5a2afdd3f62f37b4b06d1436f6b97e555"
+  },
+  {
+    "source": "python_social_learning/02_optimal_privacy_budget_binary.py",
+    "destination": "python/figure_03_binary_objective.py",
+    "source_sha256": "8fdacfdad60132c6b43006266fc9fef1e74ca6910da5cf0077226104657de62c",
+    "note": "Expanded plot from p=0.7 to p=0.55,0.7,0.9 as in manuscript; objective formulas unchanged.",
+    "packaged_sha256": "9b04f0f1fee76826dc982869104203689fa261e870502da5033d86375c21c979"
+  },
+  {
+    "source": "python_social_learning/06_stopping_time_continuous_report.py",
+    "destination": "python/figure_06a_continuous_report_time.py",
+    "source_sha256": "b4bb3afdd706c3dcf9cf6cfc883a5d1b77111273fc374aa6bf214474f7f23a66",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "b4bb3afdd706c3dcf9cf6cfc883a5d1b77111273fc374aa6bf214474f7f23a66"
+  },
+  {
+    "source": "python_social_learning/07_stopping_time_continuouos_calendar.py",
+    "destination": "python/figure_06b_continuous_calendar_time.py",
+    "source_sha256": "b76b33371726a2f6853f94928cb9e77fdc9dd50a65746977bdf503513ac8e04d",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "b76b33371726a2f6853f94928cb9e77fdc9dd50a65746977bdf503513ac8e04d"
+  },
+  {
+    "source": "python_social_learning/03_learning_rate_continuous.py",
+    "destination": "supplementary/python/continuous_learning_rate.py",
+    "source_sha256": "9a1ed28aa1363fa67835409bc4b1b0452697282473744ae3f1c8ddf20fa1c17d",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "9a1ed28aa1363fa67835409bc4b1b0452697282473744ae3f1c8ddf20fa1c17d"
+  },
+  {
+    "source": "python_social_learning/04_stopping_time_continuous.py",
+    "destination": "supplementary/python/continuous_stopping_thresholds.py",
+    "source_sha256": "edc950c49d4f97b748d495db1cbead80c9aaa682c363eb9caaeab9c1418d2974",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "edc950c49d4f97b748d495db1cbead80c9aaa682c363eb9caaeab9c1418d2974"
+  },
+  {
+    "source": "python_social_learning/05_optimal_privacy_budget_continuous.py",
+    "destination": "supplementary/python/continuous_privacy_objective.py",
+    "source_sha256": "d145e598ee1a5730e784be70912afca6658e1fb2fe99d16735f8e7c81d480c63",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "d145e598ee1a5730e784be70912afca6658e1fb2fe99d16735f8e7c81d480c63"
+  },
+  {
+    "source": "R_social_learning/python/01_stopping_time_bellman_equation.py",
+    "destination": "supplementary/python/compare_bellman_mechanisms.py",
+    "source_sha256": "998755ba830d532f82c634bec213ec2ead274d853daae1e7765c5ba6189bd882",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "998755ba830d532f82c634bec213ec2ead274d853daae1e7765c5ba6189bd882"
+  },
+  {
+    "source": "R_social_learning/additive_differntial_equation.nb",
+    "destination": "supplementary/mathematica/additive_differential_equation.nb",
+    "source_sha256": "d1f0f9df146e75b9b8652e71e8bc2cac11682b58c272084a034c3bc87fee83e0",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "d1f0f9df146e75b9b8652e71e8bc2cac11682b58c272084a034c3bc87fee83e0"
+  },
+  {
+    "source": "python_social_learning/figures/binary_submitted_report_stopping_time.pdf",
+    "destination": "reference_figures/binary_submitted_report_stopping_time.pdf",
+    "source_sha256": "c470ede98c905f9030193fa36ce52494b4cfc11b35fee70e9ca607fd7c3a93d1",
+    "note": "Existing local output; not newly validated against the manuscript.",
+    "packaged_sha256": "c470ede98c905f9030193fa36ce52494b4cfc11b35fee70e9ca607fd7c3a93d1"
+  },
+  {
+    "source": "python_social_learning/figures/binary_calendar_stopping_time.pdf",
+    "destination": "reference_figures/binary_calendar_stopping_time.pdf",
+    "source_sha256": "61397876edd1b425dbfc6c398929a9bbeab503c1e9ff27ad334c8d33f6be1231",
+    "note": "Existing local output; not newly validated against the manuscript.",
+    "packaged_sha256": "61397876edd1b425dbfc6c398929a9bbeab503c1e9ff27ad334c8d33f6be1231"
+  },
+  {
+    "source": "python_social_learning/figures/continuous_report_stopping_time_comparison.pdf",
+    "destination": "reference_figures/continuous_report_stopping_time_comparison.pdf",
+    "source_sha256": "789e60af2d55ff1b93175177ff0ed6360d690403a907bd45c6d6467c73a8ad05",
+    "note": "Existing local output; not newly validated against the manuscript.",
+    "packaged_sha256": "789e60af2d55ff1b93175177ff0ed6360d690403a907bd45c6d6467c73a8ad05"
+  },
+  {
+    "source": "python_social_learning/figures/continuous_calendar_stopping_time_comparison.pdf",
+    "destination": "reference_figures/continuous_calendar_stopping_time_comparison.pdf",
+    "source_sha256": "5bdaa196db3b596f467860dd6abd44fcd506b159a000a1aa173e289a3c964951",
+    "note": "Existing local output; not newly validated against the manuscript.",
+    "packaged_sha256": "5bdaa196db3b596f467860dd6abd44fcd506b159a000a1aa173e289a3c964951"
+  },
+  {
+    "source": "python_social_learning/binary_platform_objective.pdf",
+    "destination": "reference_figures/binary_platform_objective.pdf",
+    "source_sha256": "52e4dd3ada9198add1fa67fca5b98227edc7e14ca5d06be4eb448c929ed7abd1",
+    "note": "Existing local output; not newly validated against the manuscript.",
+    "packaged_sha256": "52e4dd3ada9198add1fa67fca5b98227edc7e14ca5d06be4eb448c929ed7abd1"
+  },
+  {
+    "source": "R_social_learning/figure3_binary_non_mon.pdf",
+    "destination": "reference_figures/figure3_binary_non_mon.pdf",
+    "source_sha256": "e74c38d9327e97bc045d0cefc9bc9ef09da83f91c56c6a6e5bc836cb5dd19d56",
+    "note": "Existing local output; candidate correspondence only, not certified identical to manuscript.",
+    "packaged_sha256": "e74c38d9327e97bc045d0cefc9bc9ef09da83f91c56c6a6e5bc836cb5dd19d56"
+  },
+  {
+    "source": "R_social_learning/normal_distribution.pdf",
+    "destination": "reference_figures/normal_distribution.pdf",
+    "source_sha256": "da063fbd55f7ffe0123d0123422af313e091df510783e0cb96c33ec4b24fb677",
+    "note": "Existing local output; candidate correspondence only, not certified identical to manuscript.",
+    "packaged_sha256": "da063fbd55f7ffe0123d0123422af313e091df510783e0cb96c33ec4b24fb677"
+  },
+  {
+    "source": "R_social_learning/figure2_reason_of_speed_up_4.pdf",
+    "destination": "reference_figures/figure2_reason_of_speed_up_4.pdf",
+    "source_sha256": "e24325b4dd0e54aa2f952265028b3b833e9c2f9599bc0cc5e13e9f6a71dd73e1",
+    "note": "Existing local output; candidate correspondence only, not certified identical to manuscript.",
+    "packaged_sha256": "e24325b4dd0e54aa2f952265028b3b833e9c2f9599bc0cc5e13e9f6a71dd73e1"
+  },
+  {
+    "source": "R_social_learning/figure5_heterogeneous_log_likelihood_ratio.pdf",
+    "destination": "reference_figures/figure5_heterogeneous_log_likelihood_ratio.pdf",
+    "source_sha256": "e70b89471162e0fce2c6207e30dbca3d73f7a969cd54e64d5eeaecf0fdcdcaec",
+    "note": "Existing local output; candidate correspondence only, not certified identical to manuscript.",
+    "packaged_sha256": "e70b89471162e0fce2c6207e30dbca3d73f7a969cd54e64d5eeaecf0fdcdcaec"
+  },
+  {
+    "source": "R_social_learning/figure1_log_likelihood_ratio.pdf",
+    "destination": "reference_figures/figure1_log_likelihood_ratio.pdf",
+    "source_sha256": "e3b429f7662be64be01584f8362bbfbcfc692a6a35cca01500e96612c3a11556",
+    "note": "Existing local output; candidate correspondence only, not certified identical to manuscript.",
+    "packaged_sha256": "e3b429f7662be64be01584f8362bbfbcfc692a6a35cca01500e96612c3a11556"
+  },
+  {
+    "source": "python_social_learning/02_optimal_privacy_budget_binary.py",
+    "destination": "supplementary/python/binary_objective_single_p.py",
+    "source_sha256": "8fdacfdad60132c6b43006266fc9fef1e74ca6910da5cf0077226104657de62c",
+    "note": "Unmodified source copy",
+    "packaged_sha256": "8fdacfdad60132c6b43006266fc9fef1e74ca6910da5cf0077226104657de62c"
+  }
+]
