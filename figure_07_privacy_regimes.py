@@ -1,4 +1,4 @@
-"""Figure 7: five privacy regimes, retaining the original seeded trajectories."""
+"""Figure 7: five privacy regimes with Gaussian signal standard deviation 1."""
 from pathlib import Path
 import argparse
 import numpy as np
@@ -9,12 +9,14 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
+SIGMA = 1.0  # Signal standard deviation for all five privacy regimes.
+
 
 def random_inputs(seed, n, regime):
-    """Reproduce the original 32-bit uniform stream and inversion-normal draws.
+    """Generate seeded 32-bit uniforms and inversion-normal draws.
 
-    Initialize NumPy's MT19937 state using the original seed recurrence. Each
-    normal consumes two uniforms; retain the signal/budget/flip draw order.
+    Initialize NumPy's MT19937 state using a fixed seed recurrence. Each
+    normal consumes two uniforms in signal/budget/flip draw order.
     No external interpreter or saved random sample files are required.
     """
     seed = int(seed) & 0xffffffff
@@ -45,7 +47,7 @@ NODES, WEIGHTS = leggauss(64)
 NODES, WEIGHTS = (NODES+1)/2, WEIGHTS/2
 
 
-def simulate(n, seed, regime, epsilon=None, sigma=1.0):
+def simulate(n, seed, regime, epsilon=None, sigma=SIGMA):
     normals, uniforms = random_inputs(seed, n, regime)
     signals = 1 + sigma*normals
     values = np.empty(n)
@@ -90,15 +92,16 @@ def main():
     fig, ax = plt.subplots(figsize=(9, 6))
     handles = []
     for regime, epsilon, base_seed, color, style, label in GROUPS:
-        print(f'{label}: {runs} paths, {n} steps', flush=True)
-        paths = np.array([simulate(n, base_seed+i, regime, epsilon) for i in range(1, runs+1)])
+        print(f'{label}: {runs} paths, {n} steps, sigma={SIGMA:g}', flush=True)
+        paths = np.array([simulate(n, base_seed+i, regime, epsilon, sigma=SIGMA)
+                          for i in range(1, runs+1)])
         row_means = paths.mean(axis=1)
         center = np.argmin(np.abs(row_means-row_means.mean()))
         for i, path in enumerate(paths):
             ax.plot(np.arange(1, n+1), path, color=color, ls=style,
                     lw=2.5 if i == center else 1, alpha=1 if i == center else 0.3)
         handles.append(Line2D([], [], color=color, ls=style, lw=2, label=label))
-    # Preserve the original plot's 4% axis expansion.
+    # Expand each axis range by 4%.
     ax.set(xlim=(1-0.04*(n-1), n+0.04*(n-1)), ylim=(-9.42, 42.42),
            xlabel=r'$n$', ylabel=r'$l_n$')
     ax.grid(alpha=0.3)
