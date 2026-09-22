@@ -1,101 +1,56 @@
-# Privacy-Aware Sequential Learning
+# 图表复现代码
 
-Code accompanying **Privacy-Aware Sequential Learning**, organized against the supplied
-MOR submission `privacy_aware_sequential_learning_MOR_submission (6).pdf`.
-The manuscript itself is not included. Figure numbers below refer to this submission,
-not the older filenames in this repository's history.
+本目录仅包含生成文章各图所需的 Python 代码及依赖清单。无需安装 R，也不需要外部数据。
 
-## Manuscript figures
+## 图号与代码对应表
 
-| Figure | Entry point | Content / status |
-| --- | --- | --- |
-| 1 | `r/figure_01_binary_accuracy.R` | Binary final-decision accuracy; p = 0.55, 0.7, 0.9. |
-| 2 | `python/figure_02_binary_stopping_time.py` | Submitted-report and calendar stopping times; two separate panels. |
-| 3 | `python/figure_03_binary_objective.py` | Binary platform objective; c = 0.01, tolerances U[0,5]. |
-| 4 | No standalone source located | Threshold/Gaussian schematic. `reference_figures/normal_distribution.pdf` is a candidate existing asset, not a verified reproduction. |
-| 5 | `r/figure_05_smooth_randomized_response.R` | Smooth randomized response and signal densities. |
-| 6(a) | `python/figure_06a_continuous_report_time.py` | Continuous submitted-report time: Bellman, Monte Carlo and asymptotic comparison. |
-| 6(b) | `python/figure_06b_continuous_calendar_time.py` | Continuous calendar time with participation. |
-| 7 | `r/figure_07_heterogeneous_learning.R` | Five privacy regimes; final plot uses sigma = 1, N = 10,000, five paths per regime. |
-| J.1 | `r/figure_J1_llr_evolution.R` | Legacy deterministic positive-report recurrence and asymptotic comparison; see caveat below. |
-| Table 1 | No numerical script required | Summary of theoretical results. |
+| 文章图号 | Python 文件 | 图片内容 | 输出文件（位于 figures/） |
+| --- | --- | --- | --- |
+| 图 1 | `figure_01_binary_accuracy.py` | 二元信号：正确最终决策概率与隐私预算 | `figure_01.pdf/png` |
+| 图 2(a)、2(b) | `figure_02_binary_stopping_time.py` | 二元信号：报告数停止时间、日历停止时间 | `figure_02a.pdf/png`、`figure_02b.pdf/png` |
+| 图 3 | `figure_03_binary_objective.py` | 二元信号：三个信号准确率下的平台目标函数 | `figure_03.pdf/png` |
+| 图 4 | `figure_04_signal_threshold.py` | 决策阈值附近的阶跃决策函数与高斯信号分布示意 | `figure_04.pdf/png` |
+| 图 5 | `figure_05_smooth_response.py` | 信号密度、平滑随机响应和行动翻转概率三个面板 | `figure_05.pdf/png` |
+| 图 6(a) | `figure_06a_continuous_report_time.py` | 连续信号：报告数停止时间，比较动态规划、模拟与渐近近似 | `figure_06a.pdf/png` |
+| 图 6(b) | `figure_06b_continuous_calendar_time.py` | 连续信号：纳入参与率后的日历停止时间 | `figure_06b.pdf/png` |
+| 图 7 | `figure_07_privacy_regimes.py` | 五种隐私机制下的对数似然比轨迹 | `figure_07.pdf/png` |
+| 附录图 J.1 | `figure_J1_likelihood_evolution.py` | 正报告递推轨迹及精确递推与渐近递推的比较 | `figure_J1.pdf/png` |
 
-See [verification and limitations](docs/VALIDATION.md) before interpreting these files
-as exact reproductions of the submission. This is an organized source release, not a
-claim that every numerical result or theoretical assertion has been independently verified.
+## 安装与运行
 
-## Python
-
-Tested environment: Python 3.13, NumPy 2.2.4, SciPy 1.15.2, Matplotlib 3.10.5.
-From the repository root:
+已验证环境：Python 3.13；依赖版本见 `requirements.txt`。建议使用独立虚拟环境。
 
 ```sh
-python -m venv .venv
-# Activate .venv using your shell's normal command, then:
 python -m pip install -r requirements.txt
-python run_python.py 2 3
-python run_python.py 6a 6b --quick
+python figure_01_binary_accuracy.py
+python figure_02_binary_stopping_time.py
+python figure_03_binary_objective.py
+python figure_04_signal_threshold.py
+python figure_05_smooth_response.py
+python figure_06a_continuous_report_time.py
+python figure_06b_continuous_calendar_time.py
+python figure_07_privacy_regimes.py
+python figure_J1_likelihood_evolution.py
 ```
 
-For the original continuous settings (B = 10, sigma = 1, 25 epsilon values,
-300 Monte Carlo paths, report cap 50,000), use:
+每个文件可独立运行，输出目录固定为脚本所在目录下的 `figures/`。程序自动保存 PDF 和 PNG，
+不弹出绘图窗口。图 2、图 6 的两个面板分别输出；图 5 和附录图 J.1 各自输出合并面板。
+压缩包和仓库仅收录代码，不包含预生成图片。
 
-```sh
-python run_python.py 6a 6b
-```
+## 参数与转换说明
 
-Full continuous runs can be lengthy. `--quick` changes B to 2, epsilon to {0.5, 1},
-Monte Carlo paths to 100 and the Bellman grid to 81; it tests execution only.
-Continuous scripts and their default model parameters are unchanged. The runner saves
-plots without requiring a graphical desktop. Output is under `outputs/full/python/`
-or `outputs/quick/python/`; scripts that use `figures/` save inside that subfolder.
-Figure 3 saves `binary_platform_objective.pdf` directly in the output directory.
+- 图 1–3 的信号准确率为 0.55、0.7、0.9；图 3 的等待成本为 0.01，隐私容忍度服从 U[0,5]。
+- 图 6 的默认参数为 B=10、sigma=1，25 个隐私预算取值、300 条模拟路径、50,000 次报告上限。
+  未停止路径不会被丢弃后用于计算无条件均值；程序会给出警告及停止比例。
+- 图 7 默认 10,000 步，每组 5 条路径，sigma=1；固定隐私预算为 0.1、0.5、1，
+  异质预算服从 U[0,1]，另含无隐私基准。保留原程序的随机数序列、路径选取和高亮规则。
+  `python figure_07_privacy_regimes.py --quick` 仅用于小规模检查，单独输出 `figure_07_quick`。
+- 图 1、图 5、图 7、附录图 J.1 从原绘图计算转换为 Python。逐点数值比较中，
+  图 1、5 最大绝对误差小于 1e-14；图 7 全部 25 条、每条 10,000 步的轨迹误差小于 2e-13；
+  附录图 J.1 的误差小于 3e-9。字体及图形库的渲染细节可能不同。
+- 图 4 未找到原独立源码，现按文章图示重绘，保留阶跃函数、高斯曲线、阈值与邻近信号标记；
+  它是示意图，曲线高度和横向位置用于排版，不应从图中读取估计参数。
+- 附录图 J.1 保留原图使用的振幅 `1/(1+exp(epsilon))`，正文图 5–7 使用 `1/2`。
+  附录图展示指定正报告历史下的确定性递推，不代替完整随机学习过程。
 
-## R
-
-Use R 4.x with `Rscript` on PATH (or use its full installed path):
-
-```sh
-Rscript --vanilla r/install_packages.R
-Rscript --vanilla run_r.R 1 5 J1
-Rscript --vanilla run_r.R 7 --quick
-Rscript --vanilla run_r.R 7
-```
-
-The runner opens PDF devices explicitly and writes to `outputs/full/r/` or
-`outputs/quick/r/`. Figure 7's original script contains preliminary experiments,
-so its PDF includes preliminary plots before the final five-regime comparison.
-Quick mode reduces only the final Figure 7 simulation to N = 100 and two paths per
-regime. Package installation is explicit in `r/install_packages.R`.
-
-## Contents and provenance
-
-- `python/`, `r/`: current manuscript-related scripts with consistent names.
-- `supplementary/`: related exploratory Python/R programs and a Mathematica notebook;
-  these are not certified generators of current manuscript figures.
-- `reference_figures/`: selected existing local PDFs, preserved as reference assets;
-  they may predate the submission or the current code.
-- `archive/original_github/`: pre-update public scripts and README, preserved verbatim.
-- `docs/source_manifest.json`: original relative locations, source SHA-256 hashes
-  and copy/edit notes.
-- `docs/VALIDATION.md`: checks performed and remaining reproducibility issues.
-
-Original research directories were left intact. WhatsApp datasets, network-inference
-code, unrelated simulations, duplicate nested folders, R session dumps and temporary
-files are excluded. No private datasets are needed by the selected main scripts.
-
-The local Figure 7 parameters differ from the old GitHub version (sigma = 3,
-N = 2,000); the local sigma = 1 version matches the submission caption. The old
-`Figure_4_Expectation.R` is a different experiment, not current Figure 4, and is
-kept in `supplementary/r/`. Its local sigma = sqrt(2) also differs from GitHub's
-sigma = 1. The J.1 script uses sigma = 1 and now initializes the previously missing
-`ln_values_new`. Its flip amplitude remains 1/(1+exp(epsilon)), unlike the 1/2
-amplitude in the current main smooth-RR scripts; this requires author review for
-exact manuscript consistency. Mathematical formulas were not silently rewritten. Figure 3 now plots all three
-manuscript signal accuracies using the existing objective function; the original
-single-p script is preserved in `supplementary/python/binary_objective_single_p.py`.
-
-## Reference
-
-Privacy-Aware Sequential Learning. The pre-existing repository cites
-https://arxiv.org/abs/2502.19525. Use the bibliographic details of the version you cite.
+所有默认绘图入口均已实际运行。图 7 的随机序列兼容逻辑直接由 Python 执行，运行时不调用 R。

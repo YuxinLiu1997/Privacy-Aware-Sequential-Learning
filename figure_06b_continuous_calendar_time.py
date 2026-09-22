@@ -1,5 +1,11 @@
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from pathlib import Path
+
+OUTPUT_DIR = Path(__file__).resolve().parent / 'figures'
+OUTPUT_DIR.mkdir(exist_ok=True)
 import math
 import os
 import warnings
@@ -14,6 +20,11 @@ theta_true = 1
 B = 10.0                         # confidence threshold
 eps_grid = np.linspace(0.1, 2.0, 25)
 
+# Participation model:
+# individual privacy tolerances epsilon_i ~ Uniform[0, kappa]
+use_participation = True
+kappa = 5.0
+
 # Monte Carlo settings
 n_runs = 300
 N_max = 50000  # report-count cap; incomplete runs are reported, not discarded
@@ -27,6 +38,26 @@ bellman_tol = 1e-8
 # l_0 = 0; each update incorporates one submitted report.
 # This comparison implements the two-sided theorem only.
 two_sided_stop = True
+
+
+# ============================================================
+# Participation probability
+# ============================================================
+
+def eta_eps(eps):
+    """
+    Participation probability:
+        eta(eps) = P(epsilon_i >= eps)
+
+    If epsilon_i ~ Uniform[0, kappa], then:
+        eta(eps) = 1 - eps / kappa
+    """
+    if not use_participation:
+        return 1.0
+
+    if not np.isfinite(kappa) or kappa <= 0 or not np.isfinite(eps) or eps < 0:
+        raise ValueError("Require finite kappa > 0 and eps >= 0.")
+    return max(0.0, 1.0 - eps / kappa)
 
 
 # ============================================================
@@ -137,7 +168,7 @@ def K_eps(eps, sigma):
     return K
 
 
-def asymptotic_stopping_time(eps, B, sigma):
+def asymptotic_report_stopping_time(eps, B, sigma):
     """
     Revised Theorem 4.8, for fixed eps > 0 and sigma > 0 as B -> infinity:
         E[tau_B | theta] ~ exp(eps sigma^2 B / 2) / K(eps,sigma),
@@ -150,11 +181,19 @@ def asymptotic_stopping_time(eps, B, sigma):
     return np.exp(0.5 * eps * sigma**2 * B) / K
 
 
+def asymptotic_calendar_stopping_time(eps, B, sigma):
+    """E[T_B | theta] = E[tau_B | theta] / eta(eps)."""
+    eta = eta_eps(eps)
+    if eta <= 0:
+        return np.inf
+    return asymptotic_report_stopping_time(eps, B, sigma) / eta
+
+
 # ============================================================
-# Bellman equation method
+# Bellman equation method: report-level stopping time
 # ============================================================
 
-def bellman_expected_stopping_time(
+def bellman_report_stopping_time(
     eps,
     B,
     sigma,
@@ -164,7 +203,8 @@ def bellman_expected_stopping_time(
     two_sided=True
 ):
     """
-    Solve Bellman equation:
+    Solve Bellman equation for report-level stopping time:
+
         H(l) = 1 + P_+(l) H(l + Delta_+(l))
                  + (1-P_+(l)) H(l + Delta_-(l))
 
@@ -200,8 +240,6 @@ def bellman_expected_stopping_time(
         H_minus = interp_H(next_minus, H_old)
 
         H_new = 1.0 + p_plus * H_plus + (1.0 - p_plus) * H_minus
-
-        # Apply boundary condition
         H_new[~interior] = 0.0
 
         diff = np.max(np.abs(H_new - H_old))
@@ -220,11 +258,43 @@ def bellman_expected_stopping_time(
     return H0, it + 1
 
 
+def bellman_calendar_stopping_time(
+    eps,
+    B,
+    sigma,
+    grid_size=401,
+    max_iter=100000,
+    tol=1e-8,
+    two_sided=True
+):
+    """
+    Convert Bellman report-level time to calendar time:
+        E[T_B | theta] = E[tau_B] / eta(eps)
+    """
+    H_report, n_iter = bellman_report_stopping_time(
+        eps=eps,
+        B=B,
+        sigma=sigma,
+        grid_size=grid_size,
+        max_iter=max_iter,
+        tol=tol,
+        two_sided=two_sided
+    )
+
+    eta = eta_eps(eps)
+
+    if eta <= 0:
+        return np.inf, n_iter, H_report
+
+    H_calendar = H_report / eta
+    return H_calendar, n_iter, H_report
+
+
 # ============================================================
-# Monte Carlo method
+# Monte Carlo method: report-level stopping time
 # ============================================================
 
-def simulate_one_stopping_time(
+def simulate_one_report_stopping_time(
     eps,
     B,
     sigma,
@@ -236,7 +306,7 @@ def simulate_one_stopping_time(
     two_sided=True
 ):
     """
-    Simulate one trajectory and return stopping time.
+    Simulate one trajectory and return report-level stopping time tau_B.
     """
     if not two_sided:
         raise ValueError("This script implements only the two-sided stopping rule.")
@@ -266,7 +336,7 @@ def simulate_one_stopping_time(
     return np.nan
 
 
-def mc_expected_stopping_time(
+def mc_report_stopping_time(
     eps,
     B,
     sigma,
@@ -326,24 +396,65 @@ def mc_expected_stopping_time(
     return float(np.mean(tau_values)), hit_rate
 
 
+def mc_calendar_stopping_time(
+    eps,
+    B,
+    sigma,
+    theta_true,
+    n_runs,
+    N_max,
+    two_sided=True
+):
+    """
+    Convert MC report-level time to calendar time:
+        E[T_B | theta] = E[tau_B] / eta(eps)
+    """
+    mean_tau, hit_rate = mc_report_stopping_time(
+        eps=eps,
+        B=B,
+        sigma=sigma,
+        theta_true=theta_true,
+        n_runs=n_runs,
+        N_max=N_max,
+        two_sided=two_sided
+    )
+
+    eta = eta_eps(eps)
+
+    if eta <= 0:
+        return np.inf, hit_rate, mean_tau
+
+    mean_T_calendar = mean_tau / eta
+    return mean_T_calendar, hit_rate, mean_tau
+
+
 # ============================================================
 # Run all methods
 # ============================================================
 
 def main():
     np.random.seed(123)
-    bellman_vals = []
+    bellman_calendar_vals = []
+    bellman_report_vals = []
     bellman_iters = []
 
-    mc_vals = []
+    mc_calendar_vals = []
+    mc_report_vals = []
     mc_hit_rates = []
 
-    asym_vals = []
+    asym_calendar_vals = []
+    asym_report_vals = []
+
+    eta_vals = []
 
     for eps in eps_grid:
         print(f"epsilon = {eps:.3f}")
 
-        H0, n_iter = bellman_expected_stopping_time(
+        eta = eta_eps(eps)
+        eta_vals.append(eta)
+
+        # Bellman
+        H_calendar, n_iter, H_report = bellman_calendar_stopping_time(
             eps=eps,
             B=B,
             sigma=sigma,
@@ -353,7 +464,8 @@ def main():
             two_sided=two_sided_stop
         )
 
-        mean_tau_mc, hit_rate = mc_expected_stopping_time(
+        # Monte Carlo
+        mean_T_calendar_mc, hit_rate, mean_tau_mc = mc_calendar_stopping_time(
             eps=eps,
             B=B,
             sigma=sigma,
@@ -363,31 +475,43 @@ def main():
             two_sided=two_sided_stop
         )
 
-        tau_asym = asymptotic_stopping_time(eps, B, sigma)
+        # Asymptotic
+        T_asym_report = asymptotic_report_stopping_time(eps, B, sigma)
+        T_asym_calendar = asymptotic_calendar_stopping_time(eps, B, sigma)
 
-        bellman_vals.append(H0)
+        bellman_calendar_vals.append(H_calendar)
+        bellman_report_vals.append(H_report)
         bellman_iters.append(n_iter)
 
-        mc_vals.append(mean_tau_mc)
+        mc_calendar_vals.append(mean_T_calendar_mc)
+        mc_report_vals.append(mean_tau_mc)
         mc_hit_rates.append(hit_rate)
 
-        asym_vals.append(tau_asym)
+        asym_calendar_vals.append(T_asym_calendar)
+        asym_report_vals.append(T_asym_report)
 
-    bellman_vals = np.array(bellman_vals)
-    mc_vals = np.array(mc_vals)
-    asym_vals = np.array(asym_vals)
+    bellman_calendar_vals = np.array(bellman_calendar_vals)
+    bellman_report_vals = np.array(bellman_report_vals)
+
+    mc_calendar_vals = np.array(mc_calendar_vals)
+    mc_report_vals = np.array(mc_report_vals)
+
+    asym_calendar_vals = np.array(asym_calendar_vals)
+    asym_report_vals = np.array(asym_report_vals)
+
     mc_hit_rates = np.array(mc_hit_rates)
+    eta_vals = np.array(eta_vals)
 
 
     # ============================================================
-    # Plot
+    # Plot calendar-time stopping time
     # ============================================================
 
     plt.figure(figsize=(9, 5.8))
 
     plt.plot(
         eps_grid,
-        bellman_vals,
+        bellman_calendar_vals,
         color="black",
         linewidth=2.5,
         marker="o",
@@ -397,17 +521,17 @@ def main():
 
     plt.plot(
         eps_grid,
-        mc_vals,
+        mc_calendar_vals,
         color="blue",
         linewidth=2.2,
         marker="s",
         markersize=4,
-        label="Monte Carlo simulation"
+        label="Monte Carlo (report mean / participation rate)"
     )
 
     plt.plot(
         eps_grid,
-        asym_vals,
+        asym_calendar_vals,
         color="red",
         linewidth=2.2,
         linestyle="--",
@@ -415,20 +539,23 @@ def main():
     )
 
     plt.xlabel(r"Privacy budget $\varepsilon$", fontsize=16)
-
-    plt.ylabel(r"Expected belief-threshold stopping time $\mathbb{E}[\tau_B]$", fontsize=13)
+    plt.ylabel(r"Expected calendar stopping time $\mathbb{E}[T_B]$", fontsize=15)
 
     plt.title(
-        fr"Belief-Threshold Stopping Time vs. Privacy Budget, $B={B}$, $\sigma={sigma}$",
+        fr"Calendar Stopping Time vs. Privacy Budget, $B={B}$, $\sigma={sigma}$",
         fontsize=16
     )
 
     plt.grid(alpha=0.25)
     plt.legend(fontsize=12)
     plt.tight_layout()
-    os.makedirs("figures", exist_ok=True)
-    plt.savefig("figures/continuous_report_stopping_time_comparison.pdf", bbox_inches="tight")
-    plt.show()
+
+    OUTPUT_DIR.mkdir(exist_ok=True)
+    plt.savefig(OUTPUT_DIR / "figure_06b.pdf", bbox_inches="tight", metadata={"Author": ""})
+    plt.savefig(OUTPUT_DIR / "figure_06b.png", bbox_inches="tight", dpi=200)
+
+    plt.close()
+
 
     # ============================================================
     # Print summary
@@ -436,16 +563,23 @@ def main():
 
     print("\nSummary")
     print("=======")
-    print("eps\tBellman\t\tMC\t\tAsymptotic\tMC hit rate\tBellman iters")
-    for eps, b, m, a, h, it in zip(
+    print("eps\teta\tBellman-cal\tMC-cal\t\tAsym-cal\tBellman-rep\tMC-rep\t\tMC hit\tIter")
+
+    for eps, eta, b_cal, m_cal, a_cal, b_rep, m_rep, h, it in zip(
         eps_grid,
-        bellman_vals,
-        mc_vals,
-        asym_vals,
+        eta_vals,
+        bellman_calendar_vals,
+        mc_calendar_vals,
+        asym_calendar_vals,
+        bellman_report_vals,
+        mc_report_vals,
         mc_hit_rates,
         bellman_iters
     ):
-        print(f"{eps:.3f}\t{b:.2f}\t\t{m:.2f}\t\t{a:.2f}\t\t{h:.6f}\t\t{it}")
+        print(
+            f"{eps:.3f}\t{eta:.3f}\t{b_cal:.2f}\t\t{m_cal:.2f}\t\t"
+            f"{a_cal:.2f}\t\t{b_rep:.2f}\t\t{m_rep:.2f}\t\t{h:.6f}\t{it}"
+        )
 
 
 if __name__ == "__main__":

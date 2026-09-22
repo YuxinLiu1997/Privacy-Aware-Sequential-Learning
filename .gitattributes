@@ -1,2 +1,1 @@
-# Preserve source bytes for cross-platform provenance checksums.
-* -text
+* text=auto eol=lf
